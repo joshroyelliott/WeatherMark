@@ -1,0 +1,34 @@
+# WeatherMark Configuration
+
+[cities]
+our_city = "Brisbane"
+their_city = "Melbourne"
+
+[temperature]
+# Temperature comfort range in Celsius
+min_comfortable = 16
+max_comfortable = 27
+
+[message]
+# Signature to use at the end of weather messages
+signature = "WeatherMark"
+
+[email]
+enabled = false
+from = "your_email@example.com"
+to = "recipient@example.com"
+smtp_server = "smtp.gmail.com"
+smtp_port = 587
+timeout = 15
+
+[sms]
+enabled = false
+from_number = "+1234567890"
+to_number = "+1234567890"
+
+[logging]
+level = "INFO"
+format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Credentials are not stored here for security reasons
+# They will be retrieved from environment variables or the pass utility
