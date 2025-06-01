@@ -1,19 +1,17 @@
-import logging
-import os
 import argparse
-from datetime import datetime
+import logging
 
 # Import modules
-from config import load_config, get_credentials
-from weather_api import (
-    get_weather,
-    is_sunny,
-    is_rainy,
-    is_temperature_comfortable,
-    get_temperature,
-)
+from config import get_credentials, load_config
 from message_constructor import construct_message
 from message_sender import send_message
+from weather_api import (
+    get_temperature,
+    get_weather,
+    is_rainy,
+    is_sunny,
+    is_temperature_comfortable,
+)
 
 
 # Parse command-line arguments
@@ -134,7 +132,7 @@ def main():
     # Check if our city has better conditions
     if reason:
         # Construct and display the message
-        message = construct_message(
+        message, subject = construct_message(
             our_city_weather,
             their_city_weather,
             OUR_CITY,
@@ -144,6 +142,7 @@ def main():
             reason,
             config["message"]["signature"],
         )
+        logger.info(f"Subject: {subject}")
         logger.info(message)
 
         # Send the message via configured channels
@@ -152,7 +151,7 @@ def main():
             sender_config = {
                 "send_email": config["email"]["enabled"],
                 "send_sms": config["sms"]["enabled"],
-                "subject": f"Weather Update: Better in {OUR_CITY}!",
+                "subject": subject,
             }
 
             # Add channel-specific configs if enabled
@@ -162,7 +161,18 @@ def main():
                     logger.warning("No email password available - skipping email")
                     sender_config["send_email"] = False
                 else:
-                    sender_config["email_config"] = config["email"]
+                    # Prepare email config
+                    email_config = config["email"].copy()
+                    # Convert string 'to' to list if needed (for backward compatibility)
+                    if "to" in email_config and isinstance(email_config["to"], str):
+                        email_config["to"] = [email_config["to"]]
+                    # Map 'to' field to 'receiver_email' expected by send_email
+                    if "to" in email_config:
+                        email_config["receiver_email"] = email_config.pop("to")
+                    # Map 'from' field to 'sender_email' expected by send_email
+                    if "from" in email_config:
+                        email_config["sender_email"] = email_config.pop("from")
+                    sender_config["email_config"] = email_config
 
             if config["sms"]["enabled"]:
                 # Skip SMS if credentials are missing
@@ -172,7 +182,12 @@ def main():
                     logger.warning("Missing Twilio credentials - skipping SMS")
                     sender_config["send_sms"] = False
                 else:
-                    sender_config["sms_config"] = config["sms"]
+                    # Prepare SMS config
+                    sms_config = config["sms"].copy()
+                    # Handle both old and new config formats for backward compatibility
+                    if "to_number" in sms_config and "to_numbers" not in sms_config:
+                        sms_config["to_numbers"] = [sms_config["to_number"]]
+                    sender_config["sms_config"] = sms_config
 
             # Only attempt to send if at least one channel is enabled
             if sender_config.get("send_email", False) or sender_config.get(

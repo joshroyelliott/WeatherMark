@@ -13,12 +13,12 @@ DEFAULT_CONFIG = {
     "email": {
         "enabled": False,
         "from": "your_email@example.com",
-        "to": "recipient@example.com",
+        "to": ["recipient@example.com"],
         "smtp_server": "smtp.gmail.com",
         "smtp_port": 587,
         "timeout": 15,
     },
-    "sms": {"enabled": False, "from_number": "+1234567890", "to_number": "+1234567890"},
+    "sms": {"enabled": False, "from_number": "+1234567890", "to_numbers": ["+1234567890"]},
     "logging": {
         "level": "INFO",
         "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",

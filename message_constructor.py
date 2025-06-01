@@ -3,6 +3,25 @@ import random
 
 logger = logging.getLogger("weathermark.message")
 
+# List of email subject lines
+SUBJECT_LINES = [
+    "Better weather in {our_city} today!",
+    "Weather update: {our_city} vs {their_city}",
+    "Weather comparison: We win in {our_city}!",
+    "Lucky us! {our_city}'s weather beats {their_city}",
+    "Weather alert: {our_city} has the advantage today",
+    "Weather report: {our_city} comes out on top",
+    "Sunshine in {our_city}, while {their_city}...",
+    "Weather bragging rights for {our_city}!",
+    "{our_city} weather FTW!",
+    "Why {our_city} has the better forecast today",
+    "Perfect conditions in {our_city} compared to {their_city}",
+    "You'd rather be in {our_city} today!",
+    "The forecast favors {our_city} today",
+    "{our_city} vs {their_city}: Weather showdown",
+    "Winning at weather in {our_city} today!",
+]
+
 # List of greeting messages
 GREETINGS = [
     "Hey there!",
@@ -195,9 +214,11 @@ def construct_message(
         min_comfortable: Minimum comfortable temperature (Celsius)
         max_comfortable: Maximum comfortable temperature (Celsius)
         reason: The reason for the better conditions ("weather", "temperature", or "both")
+        signature: Signature to include at the end of the message
 
     Returns:
-        str: A formatted message about the weather comparison
+        tuple: (message, subject) where message is the formatted message and 
+               subject is a dynamic subject line for email
     """
     logger.debug(f"Constructing message with {reason} data")
 
@@ -297,5 +318,10 @@ def construct_message(
     # Add signature if provided
     if signature:
         message += f"\n\n-- {signature}"
+    
+    # Generate a random subject line
+    subject = random.choice(SUBJECT_LINES).format(
+        our_city=our_city, their_city=their_city
+    )
 
-    return message
+    return message, subject

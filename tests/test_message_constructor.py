@@ -12,6 +12,7 @@ from message_constructor import (
     GREETINGS,
     WEATHER_STATEMENTS,
     TEMPERATURE_STATEMENTS,
+    SUBJECT_LINES,
 )
 
 # Sample weather data for testing
@@ -41,7 +42,7 @@ class TestMessageConstructor:
 
     def test_construct_message_weather_reason(self):
         """Test message construction with weather as the reason"""
-        message = construct_message(
+        message, subject = construct_message(
             SAMPLE_OUR_CITY_DATA,
             SAMPLE_THEIR_CITY_DATA,
             "Brisbane",
@@ -86,7 +87,7 @@ class TestMessageConstructor:
 
     def test_construct_message_temperature_reason(self):
         """Test message construction with temperature as the reason"""
-        message = construct_message(
+        message, subject = construct_message(
             SAMPLE_OUR_CITY_DATA,
             SAMPLE_THEIR_CITY_DATA,
             "Brisbane",
@@ -121,7 +122,7 @@ class TestMessageConstructor:
 
     def test_construct_message_both_reasons(self):
         """Test message construction with both reasons"""
-        message = construct_message(
+        message, subject = construct_message(
             SAMPLE_OUR_CITY_DATA,
             SAMPLE_THEIR_CITY_DATA,
             "Brisbane",
@@ -155,7 +156,7 @@ class TestMessageConstructor:
 
     def test_construct_message_no_signature(self):
         """Test message construction with no signature"""
-        message = construct_message(
+        message, subject = construct_message(
             SAMPLE_OUR_CITY_DATA,
             SAMPLE_THEIR_CITY_DATA,
             "Brisbane",
@@ -168,3 +169,25 @@ class TestMessageConstructor:
 
         # Verify the message doesn't contain a signature line
         assert "-- " not in message
+        
+    def test_subject_line_generation(self):
+        """Test that subject lines are correctly generated"""
+        _, subject = construct_message(
+            SAMPLE_OUR_CITY_DATA,
+            SAMPLE_THEIR_CITY_DATA,
+            "Brisbane",
+            "Melbourne",
+            18,
+            26,
+            "weather",
+            "Test Signature",
+        )
+        
+        # Verify the subject is not empty
+        assert subject
+        
+        # Verify the subject is one of our templates with formatting applied
+        assert any(
+            subj.format(our_city="Brisbane", their_city="Melbourne") == subject
+            for subj in SUBJECT_LINES
+        )

@@ -22,9 +22,9 @@
 
 A lightweight Python application that compares weather conditions between cities and sends boastful notifications when your city has better weather.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/yourusername/weathermark/main/examples/banner.png" alt="WeatherMark Banner" width="650">
-</p>
+<!-- <p align="center"> -->
+<!--   <img src="https://raw.githubusercontent.com/yourusername/weathermark/main/examples/banner.png" alt="WeatherMark Banner" width="650"> -->
+<!-- </p> -->
 
 ## 🌞 Features
 
@@ -113,6 +113,7 @@ A lightweight Python application that compares weather conditions between cities
 - Twilio account - Sign up at [Twilio](https://www.twilio.com/)
 - Twilio Account SID and Auth Token
 - Twilio phone number to send from
+> Note: phone numbers to send to require veriication
 
 The app securely handles these credentials through:
 
