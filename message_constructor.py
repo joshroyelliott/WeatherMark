@@ -307,21 +307,41 @@ def construct_message(
     )
 
     # Add specific conditions with emojis
-    message += f"In {their_city}, it's currently {their_weather} {their_emoji} at {their_temp}°C {their_temp_emoji}.\n"
-
-    # Only describe our temperature as "comfortable" if it's actually in the comfortable range
-    if min_comfortable <= our_temp <= max_comfortable:
-        message += f"Meanwhile, we're enjoying {our_weather} {our_emoji} at a comfortable {our_temp}°C {our_temp_emoji} here in {our_city}!"
+    if reason == "temperature":
+        # For temperature-only messages, focus on temperature and don't mention weather conditions
+        message += f"In {their_city}, it's currently {their_temp}°C {their_temp_emoji}.\n"
+        
+        if min_comfortable <= our_temp <= max_comfortable:
+            message += f"Meanwhile, it's a comfortable {our_temp}°C {our_temp_emoji} here in {our_city}!"
+        else:
+            message += f"Meanwhile, it's {our_temp}°C {our_temp_emoji} here in {our_city}!"
     else:
-        message += f"Meanwhile, we're enjoying {our_weather} {our_emoji} at {our_temp}°C {our_temp_emoji} here in {our_city}!"
+        # For weather and both reasons, include both weather and temperature
+        message += f"In {their_city}, it's currently {their_weather} {their_emoji} at {their_temp}°C {their_temp_emoji}.\n"
+        
+        if min_comfortable <= our_temp <= max_comfortable:
+            message += f"Meanwhile, we're enjoying {our_weather} {our_emoji} at a comfortable {our_temp}°C {our_temp_emoji} here in {our_city}!"
+        else:
+            message += f"Meanwhile, we're enjoying {our_weather} {our_emoji} at {our_temp}°C {our_temp_emoji} here in {our_city}!"
 
     # Add signature if provided
     if signature:
         message += f"\n\n-- {signature}"
     
-    # Generate a random subject line
-    subject = random.choice(SUBJECT_LINES).format(
-        our_city=our_city, their_city=their_city
-    )
+    # Generate a random subject line appropriate for the reason
+    if reason == "temperature":
+        # Filter for temperature-appropriate subject lines
+        temp_subjects = [
+            subj for subj in SUBJECT_LINES 
+            if not any(w in subj.lower() for w in ["weather", "sunshine", "forecast"])
+        ]
+        subject = random.choice(temp_subjects or SUBJECT_LINES).format(
+            our_city=our_city, their_city=their_city
+        )
+    else:
+        # Use any subject line for weather or both reasons
+        subject = random.choice(SUBJECT_LINES).format(
+            our_city=our_city, their_city=their_city
+        )
 
     return message, subject
